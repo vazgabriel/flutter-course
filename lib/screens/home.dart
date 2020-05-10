@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-import 'package:hello/components/botao.dart';
+import 'package:hello/models/repository.dart';
+import 'package:hello/components/form_repository.dart';
+import 'package:hello/components/list_repository.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -10,10 +14,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _texto = "Hello World";
+  var _repositories = new List<Repository>();
+  var _loading = false;
 
-  @override
-  void initState() => _texto = "Apos init state";
+  Future<void> searchRepositories(String repo) async {
+    if (_loading) return;
+
+    setState(() {
+      _loading = true;
+    });
+
+    var response = await http.get(
+        "https://api.github.com/search/repositories?q=$repo&page=0&per_page=10");
+    var data = jsonDecode(response.body);
+
+    setState(() {
+      _loading = false;
+      _repositories =
+          (data['items'] as List).map((e) => Repository.fromJson(e)).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +43,17 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         alignment: Alignment.center,
+        padding: EdgeInsets.all(10.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              _texto,
-              style: TextStyle(fontSize: 24.0),
+            FormRepository(
+              onSearch: searchRepositories,
+              loading: _loading,
             ),
-            Botao(
-              onPressed: () {
-                setState(() {
-                  _texto = "Novo texto";
-                });
-              },
-              text: "Mudar Texto",
+            Expanded(
+              child: ListRepository(
+                repositories: _repositories,
+              ),
             ),
           ],
         ),
