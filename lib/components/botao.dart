@@ -17,7 +17,6 @@ class Botao extends StatelessWidget {
         text,
         style: TextStyle(fontSize: 18.0),
       ),
-      shape: CircleBorder(),
     );
   }
 }
