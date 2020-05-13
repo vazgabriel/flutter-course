@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:hello/models/repository.dart';
 
@@ -19,12 +21,32 @@ class ListRepository extends StatelessWidget {
                 child: ListTile(
                   title: Text(repositories[index].name),
                   subtitle: Text(repositories[index].description),
+                  leading: CachedNetworkImage(
+                    imageUrl: "http://via.placeholder.com/150x150",
+                    imageBuilder: (context, imageProvider) => CircleAvatar(
+                      backgroundImage: imageProvider,
+                    ),
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    fadeInDuration: Duration(milliseconds: 400),
+                  ),
                 ),
               ),
               ButtonBar(
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var url = repositories[index].url;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text('Url inválida $url')));
+                      }
+                    },
                     child: Text(
                       'Abrir repositório',
                     ),

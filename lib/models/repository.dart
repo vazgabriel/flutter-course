@@ -4,8 +4,16 @@ class Repository {
   final String description;
   final int stars;
   final String url;
+  final String avatarUrl;
 
-  Repository({this.id, this.name, this.description, this.stars, this.url});
+  Repository({
+    this.id,
+    this.name,
+    this.description,
+    this.stars,
+    this.url,
+    this.avatarUrl,
+  });
 
   factory Repository.fromJson(Map<String, dynamic> json) {
     return Repository(
@@ -14,6 +22,7 @@ class Repository {
       description: json['description'],
       stars: json['stargazers_count'],
       url: json['html_url'],
+      avatarUrl: json['owner']['avatar_url'],
     );
   }
 }
