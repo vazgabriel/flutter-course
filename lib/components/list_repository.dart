@@ -20,9 +20,9 @@ class ListRepository extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(repositories[index].name),
-                  subtitle: Text(repositories[index].description),
+                  subtitle: repositories[index].description != null ? Text(repositories[index].description) : null,
                   leading: CachedNetworkImage(
-                    imageUrl: "http://via.placeholder.com/150x150",
+                    imageUrl: repositories[index].avatarUrl,
                     imageBuilder: (context, imageProvider) => CircleAvatar(
                       backgroundImage: imageProvider,
                     ),
