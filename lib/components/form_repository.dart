@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hello/components/botao.dart';
 
 class FormRepository extends StatefulWidget {
-  FormRepository({Key key, this.onSearch, this.loading}) : super(key: key);
+  FormRepository(
+      {Key key, this.repo, this.changeRepo, this.onSearch, this.loading})
+      : super(key: key);
 
+  final String repo;
+  final Function changeRepo;
   final Function onSearch;
   final bool loading;
 
@@ -15,8 +19,6 @@ class FormRepository extends StatefulWidget {
 class _FormRepositoryState extends State<FormRepository> {
   final _formKey = GlobalKey<FormState>();
 
-  var _search = "";
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -25,9 +27,7 @@ class _FormRepositoryState extends State<FormRepository> {
         children: <Widget>[
           TextFormField(
             autofocus: true,
-            onChanged: (value) => setState(() {
-              _search = value;
-            }),
+            onChanged: widget.changeRepo,
             decoration: const InputDecoration(
               hintText: 'Busque repositórios',
             ),
@@ -39,16 +39,15 @@ class _FormRepositoryState extends State<FormRepository> {
             },
           ),
           Botao(
-            onPressed: widget.loading || _search.isEmpty
+            onPressed: widget.loading || widget.repo.isEmpty
                 ? null
                 : () {
                     if (_formKey.currentState.validate()) {
-                      widget.onSearch(_search);
+                      widget.onSearch();
                     }
                   },
             text: "Buscar",
           ),
-          if (widget.loading) CircularProgressIndicator(),
         ],
       ),
     );
